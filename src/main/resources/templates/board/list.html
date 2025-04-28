@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/default :: head('Boards')">
+    <title>Boards - Bulletin Board</title>
+</head>
+<body>
+    <nav th:replace="layout/default :: navbar"></nav>
+    
+    <div th:replace="layout/default :: messages"></div>
+    
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Boards</h1>
+            <a th:href="@{/boards/new}" class="btn btn-primary">Create New Board</a>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div th:if="${#lists.isEmpty(boards)}" class="alert alert-info">
+                    No boards found. Create a new board to get started!
+                </div>
+                
+                <div th:unless="${#lists.isEmpty(boards)}" class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Posts</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="board : ${boards}">
+                                        <td>
+                                            <a th:href="@{/posts/board/{id}(id=${board.id})}" 
+                                               th:text="${board.name}">Board Name</a>
+                                        </td>
+                                        <td th:text="${board.description}">Description</td>
+                                        <td th:text="${board.posts.size()}">0</td>
+                                        <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd')}">2023-01-01</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a th:href="@{/posts/board/{id}(id=${board.id})}" 
+                                                   class="btn btn-outline-primary">View Posts</a>
+                                                <a th:href="@{/boards/{id}/edit(id=${board.id})}" 
+                                                   class="btn btn-outline-secondary">Edit</a>
+                                                <button type="button" class="btn btn-outline-danger"
+                                                        data-bs-toggle="modal" 
+                                                        th:data-bs-target="'#deleteModal' + ${board.id}">
+                                                    Delete
+                                                </button>
+                                            </div>
+                                            
+                                            <!-- Delete Confirmation Modal -->
+                                            <div class="modal fade" th:id="'deleteModal' + ${board.id}" tabindex="-1" 
+                                                 th:aria-labelledby="'deleteModalLabel' + ${board.id}" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" th:id="'deleteModalLabel' + ${board.id}">
+                                                                Confirm Delete
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Are you sure you want to delete the board 
+                                                            <strong th:text="${board.name}">Board Name</strong>?
+                                                            This will also delete all posts in this board.
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <form th:action="@{/boards/{id}/delete(id=${board.id})}" method="post">
+                                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="layout/default :: footer"></footer>
+</body>
+</html>

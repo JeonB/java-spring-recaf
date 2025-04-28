@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/default :: head(${board.name})">
+    <title>Board - Bulletin Board</title>
+</head>
+<body>
+    <nav th:replace="layout/default :: navbar"></nav>
+    
+    <div th:replace="layout/default :: messages"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/boards}">Boards</a></li>
+                        <li class="breadcrumb-item active" aria-current="page" th:text="${board.name}">Board Name</li>
+                    </ol>
+                </nav>
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h2 class="mb-0" th:text="${board.name}">Board Name</h2>
+                            <div>
+                                <a th:href="@{/posts/new(boardId=${board.id})}" class="btn btn-primary">Create Post</a>
+                                <a th:href="@{/boards/{id}/edit(id=${board.id})}" class="btn btn-outline-secondary">Edit Board</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="lead" th:text="${board.description}">Board description goes here.</p>
+                        <p class="text-muted">
+                            <small>
+                                Created: <span th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}">2023-01-01</span> | 
+                                Posts: <span th:text="${board.posts.size()}">0</span>
+                            </small>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="mb-0">Posts</h3>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(board.posts)}" class="alert alert-info">
+                            No posts yet in this board. Be the first to create a post!
+                        </div>
+                        
+                        <div th:unless="${#lists.isEmpty(board.posts)}" class="list-group">
+                            <a th:each="post : ${board.posts}" 
+                               th:href="@{/posts/{id}(id=${post.id})}" 
+                               class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1" th:text="${post.title}">Post Title</h5>
+                                    <small th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">Date</small>
+                                </div>
+                                <p class="mb-1" th:text="${#strings.abbreviate(post.content, 200)}">Content</p>
+                                <small>
+                                    Author: <span th:text="${post.author.username}">Author</span> | 
+                                    Views: <span th:text="${post.viewCount}">0</span>
+                                </small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="layout/default :: footer"></footer>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/default :: head('Create Post')">
+    <title>Create Post - Bulletin Board</title>
+</head>
+<body>
+    <nav th:replace="layout/default :: navbar"></nav>
+    
+    <div th:replace="layout/default :: messages"></div>
+    
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/posts}">Posts</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create Post</li>
+            </ol>
+        </nav>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="mb-0">Create New Post</h3>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/posts}" th:object="${post}" method="post">
+                            <div class="mb-3">
+                                <label for="board" class="form-label">Board</label>
+                                <select class="form-select" id="board" name="boardId" required>
+                                    <option value="">Select a board</option>
+                                    <option th:each="board : ${boards}" 
+                                            th:value="${board.id}" 
+                                            th:text="${board.name}"
+                                            th:selected="${selectedBoardId != null && selectedBoardId == board.id}">
+                                        Board Name
+                                    </option>
+                                </select>
+                                <div class="form-text">Select the board to post in.</div>
+                            </div>
+                            
+                            <!-- Hidden field for author ID (in a real app, this would be the current user) -->
+                            <input type="hidden" name="authorId" value="1">
+                            
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" th:field="*{title}" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">
+                                    Please provide a valid title.
+                                </div>
+                                <div class="form-text">Choose a descriptive title for your post.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="content" class="form-label">Content</label>
+                                <textarea class="form-control" id="content" th:field="*{content}" rows="10" required></textarea>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('content')}" th:errors="*{content}">
+                                    Please provide valid content.
+                                </div>
+                                <div class="form-text">Write your post content here.</div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a th:href="@{/posts}" class="btn btn-secondary me-md-2">Cancel</a>
+                                <button type="submit" class="btn btn-primary">Create Post</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="layout/default :: footer"></footer>
+</body>
+</html>
