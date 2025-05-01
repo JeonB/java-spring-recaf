@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.UserMapper">
+    
+    <!-- Result mapping -->
+    <resultMap id="userResultMap" type="com.example.demo.model.User">
+        <id property="id" column="id" />
+        <result property="username" column="username" />
+        <result property="password" column="password" />
+        <result property="email" column="email" />
+        <result property="createdAt" column="created_at" />
+        <result property="lastLogin" column="last_login" />
+    </resultMap>
+    
+    <!-- Find all users -->
+    <select id="findAll" resultMap="userResultMap">
+        SELECT id, username, password, email, created_at, last_login
+        FROM users
+    </select>
+    
+    <!-- Find user by ID -->
+    <select id="findById" resultMap="userResultMap">
+        SELECT id, username, password, email, created_at, last_login
+        FROM users
+        WHERE id = #{id}
+    </select>
+    
+    <!-- Find user by username -->
+    <select id="findByUsername" resultMap="userResultMap">
+        SELECT id, username, password, email, created_at, last_login
+        FROM users
+        WHERE username = #{username}
+    </select>
+    
+    <!-- Find user by email -->
+    <select id="findByEmail" resultMap="userResultMap">
+        SELECT id, username, password, email, created_at, last_login
+        FROM users
+        WHERE email = #{email}
+    </select>
+    
+    <!-- Insert a new user -->
+    <insert id="insert" parameterType="com.example.demo.model.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users (username, password, email, created_at, last_login)
+        VALUES (#{username}, #{password}, #{email}, #{createdAt}, #{lastLogin})
+    </insert>
+    
+    <!-- Update an existing user -->
+    <update id="update" parameterType="com.example.demo.model.User">
+        UPDATE users
+        SET username = #{username},
+            password = #{password},
+            email = #{email},
+            created_at = #{createdAt},
+            last_login = #{lastLogin}
+        WHERE id = #{id}
+    </update>
+    
+    <!-- Delete a user by ID -->
+    <delete id="deleteById">
+        DELETE FROM users
+        WHERE id = #{id}
+    </delete>
+    
+</mapper>
