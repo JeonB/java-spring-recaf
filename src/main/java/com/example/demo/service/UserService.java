@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +18,12 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -88,8 +91,8 @@ public class UserService {
         // Set creation time
         user.setCreatedAt(LocalDateTime.now());
 
-        // In a real application, you would hash the password here
-        // For example: user.setPassword(passwordEncoder.encode(user.getPassword()));
+        // Encrypt the password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return userRepository.save(user);
     }
@@ -121,12 +124,11 @@ public class UserService {
 
         user.setUsername(userDetails.getUsername());
         user.setEmail(userDetails.getEmail());
-        
+
         // Only update password if it's provided
         if (userDetails.getPassword() != null && !userDetails.getPassword().isEmpty()) {
-            // In a real application, you would hash the password here
-            // For example: user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
-            user.setPassword(userDetails.getPassword());
+            // Encrypt the password
+            user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
         }
 
         return userRepository.save(user);
@@ -156,7 +158,7 @@ public class UserService {
     public void updateLastLogin(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
-        
+
         user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);
     }
