@@ -3,6 +3,8 @@ package com.example.demo.controller;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -66,7 +68,7 @@ public class UserController {
         if (result.hasErrors()) {
             return "user/register";
         }
-        
+
         try {
             userService.registerUser(user);
             redirectAttributes.addFlashAttribute("successMessage", "Registration successful! Please log in.");
@@ -134,7 +136,7 @@ public class UserController {
         if (result.hasErrors()) {
             return "user/edit";
         }
-        
+
         try {
             userService.updateUser(id, user);
             redirectAttributes.addFlashAttribute("successMessage", "User updated successfully!");
@@ -177,6 +179,74 @@ public class UserController {
     @GetMapping("/login")
     public String showLoginForm() {
         return "user/login";
+    }
+
+    /**
+     * Display the profile page for the current user.
+     *
+     * @param user the authenticated user
+     * @param model the model to add attributes to
+     * @return the view name
+     */
+    @GetMapping("/profile")
+    public String showProfile(@AuthenticationPrincipal User user, Model model) {
+        model.addAttribute("user", user);
+        return "user/profile";
+    }
+
+    /**
+     * Display a form to edit the profile for the current user.
+     *
+     * @param user the authenticated user
+     * @param model the model to add attributes to
+     * @return the view name
+     */
+    @GetMapping("/profile/edit")
+    public String showProfileEditForm(@AuthenticationPrincipal User user, Model model) {
+        model.addAttribute("user", user);
+        return "user/profile-edit";
+    }
+
+    /**
+     * Process the update of a user's profile.
+     *
+     * @param user the authenticated user
+     * @param profileImageUrl the new profile image URL
+     * @param bio the new bio
+     * @param redirectAttributes attributes to add to the redirect
+     * @return the redirect URL
+     */
+    @PostMapping("/profile")
+    public String updateProfile(@AuthenticationPrincipal User user,
+                                @RequestParam(required = false) String profileImageUrl,
+                                @RequestParam(required = false) String bio,
+                                RedirectAttributes redirectAttributes) {
+        try {
+            userService.updateProfile(user.getId(), profileImageUrl, bio);
+            redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully!");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/users/profile";
+    }
+
+    /**
+     * Update the theme preference for the current user.
+     *
+     * @param user the authenticated user
+     * @param themePreference the new theme preference
+     * @return a response entity with the updated user
+     */
+    @PostMapping("/theme")
+    @ResponseBody
+    public ResponseEntity<User> updateTheme(@AuthenticationPrincipal User user,
+                                            @RequestParam String themePreference) {
+        try {
+            User updatedUser = userService.updateThemePreference(user.getId(), themePreference);
+            return ResponseEntity.ok(updatedUser);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     // In a real application, you would implement proper authentication

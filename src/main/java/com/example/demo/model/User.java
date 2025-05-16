@@ -54,6 +54,15 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private boolean credentialsNonExpired = true;
 
+    @Column(name = "profile_image_url")
+    private String profileImageUrl;
+
+    @Column(name = "bio", length = 500)
+    private String bio;
+
+    @Column(name = "theme_preference", length = 20)
+    private String themePreference = "light";
+
     // Default constructor required by JPA
     public User() {
     }
@@ -63,6 +72,9 @@ public class User implements UserDetails {
         this.password = password;
         this.email = email;
         this.createdAt = LocalDateTime.now();
+        this.profileImageUrl = null;
+        this.bio = null;
+        this.themePreference = "light";
     }
 
     // Getters and Setters
@@ -138,6 +150,30 @@ public class User implements UserDetails {
         this.credentialsNonExpired = credentialsNonExpired;
     }
 
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getThemePreference() {
+        return themePreference;
+    }
+
+    public void setThemePreference(String themePreference) {
+        this.themePreference = themePreference;
+    }
+
     // UserDetails interface methods
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -175,6 +211,9 @@ public class User implements UserDetails {
                 ", createdAt=" + createdAt +
                 ", lastLogin=" + lastLogin +
                 ", role='" + role + '\'' +
+                ", profileImageUrl='" + profileImageUrl + '\'' +
+                ", bio='" + bio + '\'' +
+                ", themePreference='" + themePreference + '\'' +
                 '}';
     }
 }

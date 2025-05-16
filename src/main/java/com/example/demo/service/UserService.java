@@ -131,6 +131,11 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
         }
 
+        // Update profile fields
+        user.setProfileImageUrl(userDetails.getProfileImageUrl());
+        user.setBio(userDetails.getBio());
+        user.setThemePreference(userDetails.getThemePreference());
+
         return userRepository.save(user);
     }
 
@@ -161,5 +166,41 @@ public class UserService {
 
         user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);
+    }
+
+    /**
+     * Update a user's theme preference.
+     *
+     * @param id the ID of the user
+     * @param themePreference the new theme preference
+     * @return the updated user
+     * @throws IllegalArgumentException if the user doesn't exist
+     */
+    @Transactional
+    public User updateThemePreference(Long id, String themePreference) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+
+        user.setThemePreference(themePreference);
+        return userRepository.save(user);
+    }
+
+    /**
+     * Update a user's profile information (profile image and bio).
+     *
+     * @param id the ID of the user
+     * @param profileImageUrl the new profile image URL
+     * @param bio the new bio
+     * @return the updated user
+     * @throws IllegalArgumentException if the user doesn't exist
+     */
+    @Transactional
+    public User updateProfile(Long id, String profileImageUrl, String bio) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+
+        user.setProfileImageUrl(profileImageUrl);
+        user.setBio(bio);
+        return userRepository.save(user);
     }
 }
